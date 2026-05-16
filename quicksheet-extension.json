@@ -2,7 +2,7 @@
   "name": "quicksheet-jwtdec",
   "version": "1.0.0",
   "description": "JWT token decoder — paste a token, see header & claims instantly. Tokens never leave your machine.",
-  "prefix": "jwtdec:",
+  "prefix": "jwtdec",
   "author": "cemheren",
   "entry": "dotnet run --project .",
   "params": ["token"],

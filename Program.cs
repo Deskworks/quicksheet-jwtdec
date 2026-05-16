@@ -9,41 +9,41 @@ class Program
 {
     static void Main(string[] args)
     {
+        // Emit register on startup — host listens, never asks.
+        var reg = new { type = "register", prefix = "jwtdec", name = "JWT Decoder", version = "1.0.0" };
+        Console.WriteLine(JsonSerializer.Serialize(reg));
+        Console.Out.Flush();
+
         string? line;
         while ((line = Console.ReadLine()) != null)
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
+            string id = "";
             try
             {
                 using var doc = JsonDocument.Parse(line);
                 var root = doc.RootElement;
                 string type = root.TryGetProperty("type", out var t) ? t.GetString() ?? "" : "";
 
-                if (type == "init" || type == "activate")
-                {
-                    var resp = new { type = "status", status = "ready" };
-                    Console.WriteLine(JsonSerializer.Serialize(resp));
-                    Console.Out.Flush();
-                }
-                else if (type == "request")
-                {
-                    string token = "";
-                    if (root.TryGetProperty("params", out var paramsEl) && paramsEl.ValueKind == JsonValueKind.Array)
-                    {
-                        var arr = paramsEl.EnumerateArray();
-                        if (arr.MoveNext()) token = arr.Current.GetString() ?? "";
-                    }
-                    else if (root.TryGetProperty("arguments", out var argsEl) && argsEl.ValueKind == JsonValueKind.Array)
-                    {
-                        var arr = argsEl.EnumerateArray();
-                        if (arr.MoveNext()) token = arr.Current.GetString() ?? "";
-                    }
+                if (type != "activate") continue;
 
-                    var cells = DecodeJwt(token.Trim());
-                    var response = new { type = "response", cells };
-                    Console.WriteLine(JsonSerializer.Serialize(response));
-                    Console.Out.Flush();
+                id = root.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? "" : "";
+
+                string token = "";
+                if (root.TryGetProperty("params", out var paramsEl) && paramsEl.ValueKind == JsonValueKind.Array)
+                {
+                    var arr = paramsEl.EnumerateArray();
+                    if (arr.MoveNext()) token = arr.Current.GetString() ?? "";
                 }
+                else if (root.TryGetProperty("arguments", out var argsEl))
+                {
+                    token = argsEl.GetString() ?? "";
+                }
+
+                var cells = DecodeJwt(token.Trim());
+                var response = new { type = "write", id, cells };
+                Console.WriteLine(JsonSerializer.Serialize(response));
+                Console.Out.Flush();
             }
             catch
             {
