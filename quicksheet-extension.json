@@ -7,5 +7,5 @@
   "entry": "dotnet run --project .",
   "params": ["token"],
   "protocol": "jsonlines-v1",
-  "repository": "https://github.com/cemheren/quicksheet-jwtdec"
+  "repository": "https://github.com/Deskworks/quicksheet-jwtdec"
 }
