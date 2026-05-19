@@ -34,7 +34,7 @@ Features:
 
 In any QuickSheet cell:
 ```
-ext: github:cemheren/quicksheet-jwtdec
+ext: github:Deskworks/quicksheet-jwtdec
 ```
 
 ## Usage
